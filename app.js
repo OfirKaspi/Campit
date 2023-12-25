@@ -1,5 +1,6 @@
 import express from 'express'
 import mongoose from 'mongoose'
+import ejsMate from 'ejs-mate'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import Campground from './models/campground.js'
@@ -19,6 +20,7 @@ db.once('open', () => {
 
 const app = express();
 
+app.engine('ejs', ejsMate)
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 
