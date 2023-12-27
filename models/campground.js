@@ -11,7 +11,7 @@ const CampgroundSchema = new Schema({
     reviews: [
         {
             type: Schema.Types.ObjectId,
-            red: 'Review'
+            ref: 'Review'
         }
     ]
 })

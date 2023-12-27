@@ -71,14 +71,13 @@ app.post('/campgrounds', validateCampground, asyncWrapper(async (req, res, next)
 }))
 
 app.get('/campgrounds/:id', asyncWrapper(async (req, res) => {
-    const id = req.params.id
-    const campground = await Campground.findById(id)
+    const campground = await Campground.findById(req.params.id).populate('reviews')
+    console.log(campground)
     res.render('campgrounds/show', { campground })
 }))
 
 app.get('/campgrounds/:id/edit', asyncWrapper(async (req, res) => {
-    const id = req.params.id
-    const campground = await Campground.findById(id)
+    const campground = await Campground.findById(req.params.id)
     res.render('campgrounds/edit', { campground })
 }))
 
