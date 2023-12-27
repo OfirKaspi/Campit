@@ -8,7 +8,8 @@ import { fileURLToPath } from 'url'
 import { asyncWrapper } from './utils/asyncWrapper.js'
 import { ExpressError } from './utils/ExpressError.js'
 import { Campground } from './models/campground.js'
-import { campgroundSchema } from './schemas.js'
+import { Review } from './models/review.js'
+import { campgroundSchema, reviewSchema } from './schemas.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -32,6 +33,16 @@ app.use(methodOverride('_method'))
 
 const validateCampground = (req, res, next) => {
     const { error } = campgroundSchema.validate(req.body)
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next()
+    }
+}
+
+const validateReview = (req, res, next) => {
+    const { error } = reviewSchema.validate(req.body)
     if (error) {
         const msg = error.details.map(el => el.message).join(',')
         throw new ExpressError(msg, 400)
@@ -81,6 +92,16 @@ app.delete('/campgrounds/:id', asyncWrapper(async (req, res) => {
     const { id } = req.params
     await Campground.findByIdAndDelete(id)
     res.redirect('/campgrounds')
+}))
+
+app.post('/campgrounds/:id/reviews', validateReview, asyncWrapper(async (req, res) => {
+    const campground = await Campground.findById(req.params.id)
+    const review = new Review(req.body.review)
+    console.log(review);
+    campground.reviews.push(review)
+    await review.save()
+    await campground.save()
+    res.redirect(`/campgrounds/${campground._id}`)
 }))
 
 app.all('*', (req, res, next) => {
