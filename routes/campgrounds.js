@@ -46,12 +46,14 @@ router.get('/:id/edit', asyncWrapper(async (req, res) => {
 router.put('/:id', validateCampground, asyncWrapper(async (req, res) => {
     const { id } = req.params
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground })
+    req.flash('success', 'Successfully updates campground')
     res.redirect(`/campgrounds/${campground._id}`)
 }))
 
 router.delete('/:id', asyncWrapper(async (req, res) => {
     const { id } = req.params
     await Campground.findByIdAndDelete(id)
+    req.flash('success', 'Successfully deleted Campground')
     res.redirect('/campgrounds')
 }))
 
