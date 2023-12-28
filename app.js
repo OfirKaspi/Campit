@@ -2,6 +2,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import ejsMate from 'ejs-mate'
 import methodOverride from 'method-override'
+import session from 'express-session'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -29,6 +30,19 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname, 'public')))
+
+const sessionConfig = {
+    secret: 'simplesecret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        httpOnly: true
+    }
+}
+
+app.use(session(sessionConfig))
 
 app.use('/campgrounds', campgrounds)
 app.use('/campgrounds/:id/reviews', reviews)
