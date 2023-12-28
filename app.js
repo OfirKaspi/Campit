@@ -12,6 +12,7 @@ import { Review } from './models/review.js'
 import { campgroundSchema, reviewSchema } from './schemas.js'
 
 import campgrounds from './routes/campgrounds.js'
+import reviews from './routes/reviews.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -33,38 +34,12 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body)
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next()
-    }
-}
-
 app.use('/campgrounds', campgrounds)
+app.use('/campgrounds/:id/reviews', reviews)
 
 app.get('/', (req, res) => {
     res.render('home')
 })
-
-app.post('/campgrounds/:id/reviews', validateReview, asyncWrapper(async (req, res) => {
-    const campground = await Campground.findById(req.params.id)
-    const review = new Review(req.body.review)
-    console.log(review);
-    campground.reviews.push(review)
-    await review.save()
-    await campground.save()
-    res.redirect(`/campgrounds/${campground._id}`)
-}))
-
-app.delete('/campgrounds/:id/reviews/:reviewId', asyncWrapper(async (req, res) => {
-    const { id, reviewId } = req.params
-    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } })
-    await Review.findByIdAndDelete(reviewId)
-    res.redirect(`/campgrounds/${id}`)
-}))
 
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page not found', 404))
