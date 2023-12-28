@@ -5,12 +5,7 @@ import methodOverride from 'method-override'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-import { asyncWrapper } from './utils/asyncWrapper.js'
 import { ExpressError } from './utils/ExpressError.js'
-import { Campground } from './models/campground.js'
-import { Review } from './models/review.js'
-import { campgroundSchema, reviewSchema } from './schemas.js'
-
 import campgrounds from './routes/campgrounds.js'
 import reviews from './routes/reviews.js'
 
