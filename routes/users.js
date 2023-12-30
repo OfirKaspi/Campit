@@ -2,6 +2,7 @@ import express from 'express'
 import { User } from '../models/user.js'
 import { asyncWrapper } from '../utils/asyncWrapper.js'
 import passport from 'passport'
+import { checkReturnTo } from '../middlewares/checkReturnTo.js'
 
 const router = express.Router()
 
@@ -30,9 +31,10 @@ router.get('/login', (req, res) => {
     res.render('users/login')
 })
 
-router.post('/login', passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), (req, res) => {
+router.post('/login', checkReturnTo, passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), (req, res) => {
     req.flash('success', 'Welcome back!')
-    res.redirect('/campgrounds')
+    const redirectUrl = res.locals.returnTo || '/campgrounds'
+    res.redirect(redirectUrl)
 })
 
 router.get('/logout', (req, res, next) => {
