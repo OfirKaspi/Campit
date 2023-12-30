@@ -1,21 +1,11 @@
 import express from 'express'
 import { asyncWrapper } from '../utils/asyncWrapper.js'
-import { ExpressError } from '../utils/ExpressError.js'
 import { Campground } from '../models/campground.js'
-import { campgroundSchema } from '../schemas.js'
 import { isLoggedIn } from '../middlewares/isLoggedIn.js'
+import { validateCampground } from '../middlewares/validateCampground.js'
+import { isAuthor } from '../middlewares/isAuthor.js'
 
 const router = express.Router()
-
-const validateCampground = (req, res, next) => {
-    const { error } = campgroundSchema.validate(req.body)
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next()
-    }
-}
 
 router.get('/', asyncWrapper(async (req, res) => {
     const campgrounds = await Campground.find({})
@@ -35,7 +25,8 @@ router.post('/', isLoggedIn, validateCampground, asyncWrapper(async (req, res, n
 }))
 
 router.get('/:id', asyncWrapper(async (req, res) => {
-    const campground = await Campground.findById(req.params.id).populate('reviews').populate('author')
+    const { id } = req.params
+    const campground = await Campground.findById(id).populate('reviews').populate('author')
     console.log(campground)
     if (!campground) {
         req.flash('error', 'Cannot find that campground')
@@ -44,8 +35,9 @@ router.get('/:id', asyncWrapper(async (req, res) => {
     res.render('campgrounds/show', { campground })
 }))
 
-router.get('/:id/edit', isLoggedIn, asyncWrapper(async (req, res) => {
-    const campground = await Campground.findById(req.params.id)
+router.get('/:id/edit', isLoggedIn, isAuthor, asyncWrapper(async (req, res) => {
+    const { id } = req.params
+    const campground = await Campground.findById(id)
     if (!campground) {
         req.flash('error', 'Cannot find that campground')
         return res.redirect('/campgrounds')
@@ -53,14 +45,14 @@ router.get('/:id/edit', isLoggedIn, asyncWrapper(async (req, res) => {
     res.render('campgrounds/edit', { campground })
 }))
 
-router.put('/:id', isLoggedIn, validateCampground, asyncWrapper(async (req, res) => {
+router.put('/:id', isLoggedIn, isAuthor, validateCampground, asyncWrapper(async (req, res) => {
     const { id } = req.params
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground })
     req.flash('success', 'Successfully updates campground')
     res.redirect(`/campgrounds/${campground._id}`)
 }))
 
-router.delete('/:id', isLoggedIn, asyncWrapper(async (req, res) => {
+router.delete('/:id', isLoggedIn, isAuthor, asyncWrapper(async (req, res) => {
     const { id } = req.params
     await Campground.findByIdAndDelete(id)
     req.flash('success', 'Successfully deleted Campground')
