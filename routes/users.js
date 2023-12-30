@@ -1,14 +1,15 @@
 import express from 'express'
 import { User } from '../models/user.js'
 import { asyncWrapper } from '../utils/asyncWrapper.js'
+import passport from 'passport'
 
 const router = express.Router()
 
-router.get('/register', (req, res, next) => {
+router.get('/register', (req, res) => {
     res.render('users/register')
 })
 
-router.post('/register', asyncWrapper(async (req, res, next) => {
+router.post('/register', asyncWrapper(async (req, res) => {
     try {
         const { email, password, username } = req.body
         const user = new User({ email, username })
@@ -21,5 +22,14 @@ router.post('/register', asyncWrapper(async (req, res, next) => {
         res.redirect('/register')
     }
 }))
+
+router.get('/login', (req, res) => {
+    res.render('users/login')
+})
+
+router.post('/login', passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), (req, res) => {
+    req.flash('success', 'Welcome back!')
+    res.redirect('/campgrounds')
+})
 
 export default router
