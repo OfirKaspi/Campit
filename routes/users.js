@@ -5,10 +5,14 @@ import { login, logout, register, renderLogin, renderRegister } from '../control
 
 const router = express.Router()
 
-router.get('/register', renderRegister)
-router.post('/register', register)
-router.get('/login', renderLogin)
-router.post('/login', checkReturnTo, passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), login)
+router.route('/register')
+    .get(renderRegister)
+    .post(register)
+
+router.route('/login')
+    .get(renderLogin)
+    .post(checkReturnTo, passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), login)
+
 router.get('/logout', logout)
 
 export default router

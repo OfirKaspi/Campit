@@ -6,12 +6,17 @@ import { index, createCampground, renderNewForm, showCampground, renderEditForm,
 
 const router = express.Router()
 
-router.get('/', index)
+router.route('/')
+    .get(index)
+    .post(isLoggedIn, validateCampground, createCampground)
+
 router.get('/new', isLoggedIn, renderNewForm)
-router.post('/', isLoggedIn, validateCampground, createCampground)
-router.get('/:id', showCampground)
+
+router.route('/:id')
+    .get(showCampground)
+    .put(isLoggedIn, isAuthor, validateCampground, updateCampground)
+    .delete(isLoggedIn, isAuthor, deleteCampground)
+
 router.get('/:id/edit', isLoggedIn, isAuthor, renderEditForm)
-router.put('/:id', isLoggedIn, isAuthor, validateCampground, updateCampground)
-router.delete('/:id', isLoggedIn, isAuthor, deleteCampground)
 
 export default router
