@@ -6,10 +6,14 @@ import session from 'express-session'
 import flash from 'connect-flash'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import passport from 'passport'
+import LocalStrategy from "passport-local"
 
+import usersRoutes from './routes/users.js'
+import campgroundsRoutes from './routes/campgrounds.js'
+import reviewsRoutes from './routes/reviews.js'
 import { ExpressError } from './utils/ExpressError.js'
-import campgrounds from './routes/campgrounds.js'
-import reviews from './routes/reviews.js'
+import { User } from './models/user.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -45,6 +49,12 @@ const sessionConfig = {
 
 app.use(session(sessionConfig))
 app.use(flash())
+app.use(passport.initialize())
+app.use(passport.session())
+passport.use(new LocalStrategy(User.authenticate()))
+
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
 
 app.use((req, res, next) => {
     res.locals.success = req.flash('success')
@@ -52,8 +62,9 @@ app.use((req, res, next) => {
     next()
 })
 
-app.use('/campgrounds', campgrounds)
-app.use('/campgrounds/:id/reviews', reviews)
+app.use('/', usersRoutes)
+app.use('/campgrounds', campgroundsRoutes)
+app.use('/campgrounds/:id/reviews', reviewsRoutes)
 
 app.get('/', (req, res) => {
     res.render('home')
