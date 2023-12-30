@@ -4,6 +4,7 @@ import { ExpressError } from '../utils/ExpressError.js'
 import { Campground } from '../models/campground.js'
 import { Review } from '../models/review.js'
 import { reviewSchema } from '../schemas.js'
+import { isLoggedIn } from '../middlewares/isLoggedIn.js'
 
 const router = express.Router({ mergeParams: true })
 
