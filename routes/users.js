@@ -14,8 +14,11 @@ router.post('/register', asyncWrapper(async (req, res) => {
         const { email, password, username } = req.body
         const user = new User({ email, username })
         const registeredUser = await User.register(user, password)
-        req.flash('success', 'Welcome to Yelp Camp!')
-        res.redirect('/campgrounds')
+        req.login(registeredUser, err => {
+            if (err) return next(err)
+            req.flash('success', 'Welcome to Yelp Camp!')
+            res.redirect('/campgrounds')
+        })
     }
     catch (err) {
         req.flash('error', err.message)
