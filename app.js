@@ -4,16 +4,22 @@ import ejsMate from 'ejs-mate'
 import methodOverride from 'method-override'
 import session from 'express-session'
 import flash from 'connect-flash'
-import path from 'path'
-import { fileURLToPath } from 'url'
 import passport from 'passport'
 import LocalStrategy from "passport-local"
+import dotenv from 'dotenv'
+
+import path from 'path'
+import { fileURLToPath } from 'url'
 
 import usersRoutes from './routes/users.js'
 import campgroundsRoutes from './routes/campgrounds.js'
 import reviewsRoutes from './routes/reviews.js'
 import { ExpressError } from './utils/ExpressError.js'
 import { User } from './models/user.js'
+
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config()
+}
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
