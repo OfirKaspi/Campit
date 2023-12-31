@@ -1,3 +1,4 @@
+import { cloudinary } from '../cloudinary/index.js'
 import { Campground } from '../models/campground.js'
 import { asyncWrapper } from '../utils/asyncWrapper.js'
 
@@ -47,6 +48,13 @@ export const updateCampground = asyncWrapper(async (req, res) => {
     const newImages = req.files.map(file => ({ url: file.path, filename: file.filename }))
     campground.images.push(...newImages)
     await campground.save()
+    console.log(campground);
+    if (req.body.deleteImages) {
+        for (let filename of req.body.deleteImages) {
+            await cloudinary.uploader.destroy(filename)
+        }
+        await campground.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
+    }
     req.flash('success', 'Successfully updates campground')
     res.redirect(`/campgrounds/${campground._id}`)
 })
