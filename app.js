@@ -7,6 +7,7 @@ import flash from 'connect-flash'
 import passport from 'passport'
 import LocalStrategy from "passport-local"
 import dotenv from 'dotenv'
+import mongoSanitize from 'express-mongo-sanitize'
 
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -41,6 +42,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(mongoSanitize())
 
 const sessionConfig = {
     secret: 'simplesecret',
@@ -63,6 +65,7 @@ passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
 app.use((req, res, next) => {
+    console.log(req.query)
     res.locals.currUser = req.user
     res.locals.success = req.flash('success')
     res.locals.error = req.flash('error')
