@@ -22,7 +22,10 @@ export const createCampground = asyncWrapper(async (req, res, next) => {
     }).send()
     const campground = new Campground(req.body.campground)
     campground.geometry = geoData.body.features[0].geometry
-    campground.images = req.files.map(file => ({ url: file.path, filename: file.filename }))
+    campground.images = (req.files.length)
+        ? req.files.map(file => ({ url: file.path, filename: file.filename }))
+        : [{ url: 'https://res.cloudinary.com/dudwjf2pu/image/upload/v1704032975/YelpCamp/zpfniigy0vbig886nu2w.png', filename: 'image' }]
+
     campground.author = req.user._id
     await campground.save()
     req.flash('success', 'Successfully made a new Campground')
