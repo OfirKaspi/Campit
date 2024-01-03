@@ -9,6 +9,7 @@ import LocalStrategy from "passport-local"
 import dotenv from 'dotenv'
 import mongoSanitize from 'express-mongo-sanitize'
 import helmet from 'helmet'
+import MongoStore from 'connect-mongo'
 
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -26,8 +27,9 @@ if (process.env.NODE_ENV !== 'production') {
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 // const dbUrl = process.env.DB_URL
+const dbUrl = 'mongodb://127.0.0.1:27017/yelp-camp'
 
-mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp')
+mongoose.connect(dbUrl)
 
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error'))
@@ -46,7 +48,20 @@ app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(mongoSanitize())
 
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: 'thisshouldbeabettersecret!'
+    }
+})
+
+store.on('err', function (err) {
+    console.log('SESSION STORE ERROR', err);
+})
+
 const sessionConfig = {
+    store,
     name: process.env.SESSION_NAME,
     secret: process.env.SESSION_SECRET,
     resave: false,
