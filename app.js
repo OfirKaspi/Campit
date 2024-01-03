@@ -26,8 +26,9 @@ if (process.env.NODE_ENV !== 'production') {
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-// const dbUrl = process.env.DB_URL
-const dbUrl = 'mongodb://127.0.0.1:27017/yelp-camp'
+
+const dbUrl = process.env.DB_URL
+// const dbUrl = 'mongodb://127.0.0.1:27017/yelp-camp'
 
 mongoose.connect(dbUrl)
 
@@ -52,7 +53,7 @@ const store = MongoStore.create({
     mongoUrl: dbUrl,
     touchAfter: 24 * 60 * 60,
     crypto: {
-        secret: 'thisshouldbeabettersecret!'
+        secret: process.env.DB_SECRET
     }
 })
 
