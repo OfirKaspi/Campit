@@ -60,7 +60,6 @@ export const updateCampground = asyncWrapper(async (req, res) => {
     const newImages = req.files.map(file => ({ url: file.path, filename: file.filename }))
     campground.images.push(...newImages)
     await campground.save()
-    console.log(campground);
     if (req.body.deleteImages) {
         for (let filename of req.body.deleteImages) {
             await cloudinary.uploader.destroy(filename)

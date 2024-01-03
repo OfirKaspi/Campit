@@ -25,6 +25,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+// const dbUrl = process.env.DB_URL
 
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp')
 
@@ -115,7 +116,6 @@ passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
 app.use((req, res, next) => {
-    console.log(req.query)
     res.locals.currUser = req.user
     res.locals.success = req.flash('success')
     res.locals.error = req.flash('error')
