@@ -38,7 +38,7 @@ YelpCamp Backend is built upon industry-accepted conventions and best practices.
 
 ## View YelpCamp in Action
 
-To explore the diverse collection of campsites and experience YelpCamp, you can visit the live site [here](#). Discover camps, view pricing details, and plan your next outdoor adventure with YelpCamp.
+To explore the diverse collection of campsites and experience YelpCamp, you can visit the live site [here](https://yelp-camp-2a86.onrender.com). Discover camps, view pricing details, and plan your next outdoor adventure with YelpCamp.
 
 ## Installation
 
